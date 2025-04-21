@@ -1,0 +1,103 @@
+graph TD
+    %% Main Components
+    VPC["AWS VPC\n10.0.0.0/16"]
+    EKS["EKS Cluster\n(staging)"]
+    NodeGroup["EKS Node Group\n(SPOT Instances)"]
+    ECR["ECR Repository\n(trainings)"]
+    
+    %% VPC Components
+    IGW["Internet Gateway"]
+    NG1["NAT Gateway 1"]
+    NG2["NAT Gateway 2"]
+    EIP1["Elastic IP 1"]
+    EIP2["Elastic IP 2"]
+    
+    %% Route Tables
+    RTPublic["Public Route Table"]
+    RTPrivate1["Private Route Table 1"]
+    RTPrivate2["Private Route Table 2"]
+    
+    %% Security Groups
+    SGCP["Control Plane Security Group"]
+    
+    %% Subnets
+    PublicSubnet1["Public Subnet 1\n10.0.0.0/18\nus-east-1a"]
+    PublicSubnet2["Public Subnet 2\n10.0.64.0/18\nus-east-1c"]
+    PrivateSubnet1["Private Subnet 1\n10.0.128.0/18\nus-east-1a"]
+    PrivateSubnet2["Private Subnet 2\n10.0.192.0/18\nus-east-1c"]
+    
+    %% IAM Roles
+    ClusterRole["IAM Role\n(stagingSa)"]
+    NodeRole["IAM Role\n(eksNodeGroupStaging)"]
+    EBSCSIRole["IAM Role\n(EBS CSI Driver)"]
+    
+    %% EKS Addons
+    EBSCSIDriver["EBS CSI Driver Addon"]
+    OIDCProvider["OIDC Provider"]
+    
+    %% Connections
+    VPC --> PublicSubnet1
+    VPC --> PublicSubnet2
+    VPC --> PrivateSubnet1
+    VPC --> PrivateSubnet2
+    VPC --> IGW
+    VPC --> SGCP
+    
+    %% Internet Gateway and NAT Connections
+    IGW --> RTPublic
+    EIP1 --> NG1
+    EIP2 --> NG2
+    PublicSubnet1 --> NG1
+    PublicSubnet2 --> NG2
+    NG1 --> RTPrivate1
+    NG2 --> RTPrivate2
+    
+    %% Route Table Associations
+    RTPublic --> PublicSubnet1
+    RTPublic --> PublicSubnet2
+    RTPrivate1 --> PrivateSubnet1
+    RTPrivate2 --> PrivateSubnet2
+    
+    %% EKS Connections
+    ClusterRole --> EKS
+    EKS --> PublicSubnet1
+    EKS --> PublicSubnet2
+    EKS --> PrivateSubnet1
+    EKS --> PrivateSubnet2
+    EKS --> OIDCProvider
+    OIDCProvider --> EBSCSIRole
+    EBSCSIRole --> EBSCSIDriver
+    EBSCSIDriver --> EKS
+    
+    %% Node Group Connections
+    NodeRole --> NodeGroup
+    NodeGroup --> PrivateSubnet1
+    NodeGroup --> PrivateSubnet2
+    NodeGroup --> EKS
+    
+    %% External Connection
+    Internet((Internet)) --> IGW
+    
+    %% Style
+    classDef vpc fill:#E8F4FA,stroke:#2D72B8,stroke-width:2px
+    classDef subnet fill:#E8F4FA,stroke:#2D72B8,stroke-width:1px
+    classDef cluster fill:#FCEEE3,stroke:#FF9900,stroke-width:2px
+    classDef nodegroup fill:#FCEEE3,stroke:#FF9900,stroke-width:1px
+    classDef repo fill:#E7F9EE,stroke:#1D8102,stroke-width:2px
+    classDef gateway fill:#F1E8FA,stroke:#4D27AA,stroke-width:1px
+    classDef securityGroup fill:#FAFAFC,stroke:#999999,stroke-width:1px
+    classDef routeTable fill:#FAFAFC,stroke:#999999,stroke-width:1px
+    classDef role fill:#FAF3DD,stroke:#7C6E00,stroke-width:1px
+    classDef internet fill:#D6D6D6,stroke:#666666,stroke-width:1px
+    
+    class VPC vpc
+    class PublicSubnet1,PublicSubnet2,PrivateSubnet1,PrivateSubnet2 subnet
+    class EKS cluster
+    class NodeGroup nodegroup
+    class ECR repo
+    class IGW,NG1,NG2,EIP1,EIP2 gateway
+    class SGCP securityGroup
+    class RTPublic,RTPrivate1,RTPrivate2 routeTable
+    class ClusterRole,NodeRole,EBSCSIRole,OIDCProvider role
+    class Internet internet
+    class EBSCSIDriver gateway
