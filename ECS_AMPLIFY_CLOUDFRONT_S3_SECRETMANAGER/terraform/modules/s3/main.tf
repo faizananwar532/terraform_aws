@@ -184,7 +184,6 @@ resource "aws_s3_bucket_policy" "content" {
         Effect    = "Allow"
         Principal = {
           AWS = var.agora_s3_user_arn
-          # "arn:aws:iam::381940662809:user/Dev_Agora_S3"
         }
         Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
         Resource = [
