@@ -1,0 +1,85 @@
+[
+    {
+        "name": "${project_name}-${environment}-container",
+        "image": "${ecr_repository_url}:${image_tag}",
+        "portMappings": [
+            {
+                "containerPort": 5001,
+                "protocol": "tcp"
+            }
+        ],
+        "environment": [
+            {
+                "name": "PORT",
+                "value": "5001"
+            },
+            {
+                "name": "NODE_ENV",
+                "value": "${environment}"
+            }
+        ],
+        "secrets": [
+            {
+                "name": "SECRET",
+                "valueFrom": "${app_secrets_arn}:SECRET::"
+            },
+            {
+                "name": "DB_URL",
+                "valueFrom": "${app_secrets_arn}:DB_URL::"
+            },
+            {
+                "name": "AWS_BUCKET_NAME",
+                "valueFrom": "${app_secrets_arn}:AWS_BUCKET_NAME::"
+            },
+            {
+                "name": "AWS_BUCKET_NAME_FOR_CLOUD",
+                "valueFrom": "${app_secrets_arn}:AWS_BUCKET_NAME_FOR_CLOUD::"
+            },
+            {
+                "name": "AWS_REGION",
+                "valueFrom": "${app_secrets_arn}:AWS_REGION::"
+            },
+            {
+                "name": "CDN_URL",
+                "valueFrom": "${app_secrets_arn}:CDN_URL::"
+            },
+            {
+                "name": "AWS_CLOUDFRONT_DISTRIBUTION_ID",
+                "valueFrom": "${app_secrets_arn}:AWS_CLOUDFRONT_DISTRIBUTION_ID::"
+            },
+            {
+                "name": "MEDIACONVERT_ENDPOINT",
+                "valueFrom": "${app_secrets_arn}:MEDIACONVERT_ENDPOINT::"
+            },
+            {
+                "name": "MEDIACONVERT_QUEUE_ARN",
+                "valueFrom": "${app_secrets_arn}:MEDIACONVERT_QUEUE_ARN::"
+            },
+            {
+                "name": "MEDIACONVERT_ROLE_ARN",
+                "valueFrom": "${app_secrets_arn}:MEDIACONVERT_ROLE_ARN::"
+            },
+            {
+                "name": "SNS_ROLE_ARN",
+                "valueFrom": "${app_secrets_arn}:SNS_ROLE_ARN::"
+            },
+            {
+                "name": "SNS_TOPIC_ARN",
+                "valueFrom": "${app_secrets_arn}:SNS_TOPIC_ARN::"
+            },
+            {
+                "name": "SENTRY_DSN",
+                "valueFrom": "${app_secrets_arn}:SENTRY_DSN::"
+            }
+        ],
+        "essential": true,
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "/ecs/${project_name}-${environment}",
+                "awslogs-region": "${aws_region}",
+                "awslogs-stream-prefix": "ecs"
+            }
+        }
+    }
+] 
