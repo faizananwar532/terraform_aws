@@ -92,7 +92,7 @@ resource "aws_lb_listener" "http" {
 
 # Task Definition Template - Initial deployment only
 data "template_file" "task_definition" {
-  template = file("../../task_definitions/${var.environment}.json")
+  template = file("../../task_definitions/taskdefinition.json")
 
   vars = {
     project_name           = var.project_name
